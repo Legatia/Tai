@@ -23,10 +23,10 @@ module tai::user_profile {
     const TIER_VIDEO: u8 = 3;
     const TIER_PREMIUM: u8 = 4;
 
-    const STAKE_AUDIO: u64 = 10_000_000_000;       // 10 SUI
-    const STAKE_PODCAST: u64 = 50_000_000_000;     // 50 SUI
-    const STAKE_VIDEO: u64 = 200_000_000_000;      // 200 SUI
-    const STAKE_PREMIUM: u64 = 1_000_000_000_000;  // 1000 SUI
+    const STAKE_AUDIO: u64 = 1_000_000_000;       // 1 SUI
+    const STAKE_PODCAST: u64 = 10_000_000_000;     // 10 SUI
+    const STAKE_VIDEO: u64 = 50_000_000_000;      // 50 SUI
+    const STAKE_PREMIUM: u64 = 100_000_000_000;  // 100 SUI
 
     // ========== Structs ==========
 

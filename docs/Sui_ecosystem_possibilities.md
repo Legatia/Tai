@@ -11,11 +11,12 @@ Sui's ecosystem offers a toolkit of infrastructure components—some essential, 
 - zkLogin (Onboarding)
 - Shinami (Sponsored Tx)
 - Walrus (Replay Storage)
-- Nautilus (Analytics)
+- **Surflux (Real-time Events)** ← NEW
 - **Shelby (Bandwidth Bootstrapping)**
 
-### Phase 2 (Growth - Months 4-9): Token Economy
+### Phase 2 (Growth - Months 4-9): Token Economy & Analytics
 **Add:**
+- Nautilus (Deep Analytics)
 - SuiNS (Streamer Handles)
 - Trident/MovEX (Token Liquidity)
 - Kiosk (Simple NFT Marketplace)
@@ -216,6 +217,44 @@ Think of it as your “internal YouTube Studio,” but trustable.
 
 –––
 
+**13. Surflux (Real-time Event Streaming)** 🚀 *Phase 1 - Essential*
+
+Surflux provides production-ready real-time event streaming via SSE (Server-Sent Events).
+
+**Why Surflux for Phase 1:**
+- **No infrastructure** — No indexers to maintain, no WebSocket management
+- **Instant updates** — Events delivered within 1-2 seconds of finalization
+- **Flexible filtering** — Subscribe to specific packages, addresses, or objects
+- **Guaranteed delivery** — Events persisted and resumable via `last-id`
+
+**Use Cases for Tai:**
+
+### A. Live Tip Alerts
+```typescript
+// Subscribe to TipSent events from Tai package
+const stream = new EventSource(
+  `https://stream.surflux.dev/v1/flux/events?package=<TAI_PACKAGE>&api_key=<KEY>`
+);
+stream.onmessage = (e) => showTipAlert(JSON.parse(e.data));
+```
+
+### B. Prediction Market Updates
+Stream `BetPlaced` and `PredictionResolved` events → Update UI without polling.
+
+### C. Points Milestone Notifications
+Stream `MilestoneReached` events → Trigger congratulations popups.
+
+### D. Content Purchase Alerts
+Stream `ContentPurchased` → Notify creator instantly when someone buys VOD.
+
+**Surflux vs Nautilus:**
+- **Surflux** = Real-time event streaming (Phase 1, lightweight)
+- **Nautilus** = Deep analytics, historical queries, custom schemas (Phase 2, heavy)
+
+Use Surflux for live UI updates, Nautilus for dashboards and analytics.
+
+–––
+
 ## 🏗️ Final Architecture Stack
 
 Your streaming platform integrates Sui ecosystem as follows:
@@ -225,9 +264,10 @@ Your streaming platform integrates Sui ecosystem as follows:
 **Walrus** = Replay storage
 **zkLogin** = Gasless onboarding
 **Shinami** = Sponsored transactions + RPC
-**Nautilus** = Analytics + event indexing
+**Surflux** = Real-time event streaming for live UI
 
 ### Phase 2 (Growth)
+**Nautilus** = Deep analytics + historical queries
 **Trident** = Token liquidity
 **SuiNS** = Human-readable handles
 **Kiosk** = Simple NFT marketplace
@@ -249,7 +289,7 @@ All glued together by **Move contracts** defining:
 • Equity NFTs & Revenue Splits
 • Ads & Moderation
 
-Nautilus (yes, the Cephalopod of Sui) is one of the most underrated pieces in the ecosystem, and for a streaming platform like Chillie, it quietly unlocks a few powers you don’t get from the other components.
+Nautilus (yes, the Cephalopod of Sui) is one of the most underrated pieces in the ecosystem, and for a streaming platform like Tai, it quietly unlocks a few powers you don’t get from the other components.
 
 Nautilus is essentially a **Sui-native indexer + data engine** that exposes:
 
@@ -262,7 +302,7 @@ Nautilus is essentially a **Sui-native indexer + data engine** that exposes:
 
 Think of it as your “Sui GraphQL brain,” but fast, cheap, and well-behaved.
 
-Here’s how Nautilus integrates into Chillie in concrete, meaningful ways.
+Here’s how Nautilus integrates into Tai in concrete, meaningful ways.
 
 –––
 
@@ -385,25 +425,6 @@ Even without a full AI pipeline, you can build useful discovery by pulling patte
 
 You don’t need to centralize data; it’s already indexed.
 
-Chillie gets a living recommendation system.
+Tai gets a living recommendation system.
 
 –––
-
-**How Nautilus fits in the Sui-powered stack**
-
-Walrus = storage
-Shelby = bandwidth
-Keep = private data
-Seal = proofs
-Kiosk = commerce
-zkLogin = onboarding
-Ika = UX transaction fabric
-DeepBook = markets
-Shinami = RPC/gas sponsorship
-SuiNS = names
-**Nautilus = analytics + intelligence layer**
-
-It’s the *quiet intelligence layer* beneath your platform.
-Without it, you’re blind.
-With it, you offer a polished, dashboard-rich experience like YouTube—while staying decentralized.
-
