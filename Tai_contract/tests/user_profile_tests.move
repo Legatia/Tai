@@ -1,7 +1,7 @@
 #[test_only]
 module tai::user_profile_tests {
     use sui::test_scenario::{Self as ts, Scenario};
-    use sui::coin::{Self, Coin};
+    use sui::coin::{Self};
     use sui::sui::SUI;
     use sui::clock::{Self, Clock};
     use tai::user_profile::{Self, UserProfile};
@@ -39,7 +39,8 @@ module tai::user_profile_tests {
         // Create profile
         ts::next_tx(&mut scenario, ALICE);
         {
-            user_profile::create_and_transfer(&clock, ts::ctx(&mut scenario));
+            let profile = user_profile::create_profile(&clock, ts::ctx(&mut scenario));
+            transfer::public_transfer(profile, ALICE);
         };
 
         // Stake 1 SUI for AUDIO tier
@@ -68,7 +69,8 @@ module tai::user_profile_tests {
         // Create profile
         ts::next_tx(&mut scenario, ALICE);
         {
-            user_profile::create_and_transfer(&clock, ts::ctx(&mut scenario));
+            let profile = user_profile::create_profile(&clock, ts::ctx(&mut scenario));
+            transfer::public_transfer(profile, ALICE);
         };
 
         // Stake 50 SUI for VIDEO tier
@@ -97,7 +99,8 @@ module tai::user_profile_tests {
         // Create and stake
         ts::next_tx(&mut scenario, ALICE);
         {
-            user_profile::create_and_transfer(&clock, ts::ctx(&mut scenario));
+            let profile = user_profile::create_profile(&clock, ts::ctx(&mut scenario));
+            transfer::public_transfer(profile, ALICE);
         };
 
         ts::next_tx(&mut scenario, ALICE);
@@ -112,12 +115,13 @@ module tai::user_profile_tests {
         ts::next_tx(&mut scenario, ALICE);
         {
             let mut profile = ts::take_from_sender<UserProfile>(&scenario);
-            user_profile::unstake(&mut profile, ts::ctx(&mut scenario));
+            let coin = user_profile::unstake(&mut profile, ts::ctx(&mut scenario));
 
             assert!(user_profile::tier(&profile) == 0, 0); // Back to FREE
             assert!(user_profile::staked_amount(&profile) == 0, 1);
 
             ts::return_to_sender(&scenario, profile);
+            transfer::public_transfer(coin, ALICE);
         };
 
         clock::destroy_for_testing(clock);
@@ -131,7 +135,8 @@ module tai::user_profile_tests {
 
         ts::next_tx(&mut scenario, ALICE);
         {
-            user_profile::create_and_transfer(&clock, ts::ctx(&mut scenario));
+            let profile = user_profile::create_profile(&clock, ts::ctx(&mut scenario));
+            transfer::public_transfer(profile, ALICE);
         };
 
         // FREE tier cannot stream

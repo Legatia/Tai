@@ -5,7 +5,7 @@ module tai::content_tests {
     use sui::sui::SUI;
     use sui::clock::{Self, Clock};
     use tai::user_profile::{Self, UserProfile};
-    use tai::content::{Self, Content, PurchaseReceipt};
+    use tai::content::{Self, Content};
 
     const ALICE: address = @0xA11CE;
     const BOB: address = @0xB0B;
@@ -122,7 +122,8 @@ module tai::content_tests {
         // Create profile with VIDEO tier
         ts::next_tx(&mut scenario, BOB);
         {
-            user_profile::create_and_transfer(&clock, ts::ctx(&mut scenario));
+            let profile = user_profile::create_profile(&clock, ts::ctx(&mut scenario));
+            transfer::public_transfer(profile, BOB);
         };
 
         ts::next_tx(&mut scenario, BOB);

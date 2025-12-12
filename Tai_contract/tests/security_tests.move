@@ -1,7 +1,7 @@
 #[test_only]
 module tai::security_tests {
     use sui::test_scenario::{Self as ts, Scenario};
-    use sui::coin::{Self, Coin};
+    use sui::coin::{Self};
     use sui::sui::SUI;
     use sui::clock::{Self, Clock};
     use tai::user_profile::{Self, UserProfile};
@@ -30,7 +30,8 @@ module tai::security_tests {
         // Alice creates profile and room
         ts::next_tx(&mut scenario, ALICE);
         {
-            user_profile::create_and_transfer(&clock, ts::ctx(&mut scenario));
+            let profile = user_profile::create_profile(&clock, ts::ctx(&mut scenario));
+            transfer::public_transfer(profile, ALICE);
         };
 
         ts::next_tx(&mut scenario, ALICE);
@@ -105,7 +106,8 @@ module tai::security_tests {
         // Create two rooms
         ts::next_tx(&mut scenario, ALICE);
         {
-            user_profile::create_and_transfer(&clock, ts::ctx(&mut scenario));
+            let profile = user_profile::create_profile(&clock, ts::ctx(&mut scenario));
+            transfer::public_transfer(profile, ALICE);
         };
 
         ts::next_tx(&mut scenario, ALICE);
@@ -178,14 +180,16 @@ module tai::security_tests {
         // Create profile without staking
         ts::next_tx(&mut scenario, ALICE);
         {
-            user_profile::create_and_transfer(&clock, ts::ctx(&mut scenario));
+            let profile = user_profile::create_profile(&clock, ts::ctx(&mut scenario));
+            transfer::public_transfer(profile, ALICE);
         };
 
         // Try to unstake (should fail - no staked balance)
         ts::next_tx(&mut scenario, ALICE);
         {
             let mut profile = ts::take_from_sender<UserProfile>(&scenario);
-            user_profile::unstake(&mut profile, ts::ctx(&mut scenario));
+            let unstaked_coin = user_profile::unstake(&mut profile, ts::ctx(&mut scenario));
+            coin::burn_for_testing(unstaked_coin);
             ts::return_to_sender(&scenario, profile);
         };
 
@@ -236,7 +240,8 @@ module tai::security_tests {
         // Bob creates a FREE tier profile
         ts::next_tx(&mut scenario, BOB);
         {
-            user_profile::create_and_transfer(&clock, ts::ctx(&mut scenario));
+            let profile = user_profile::create_profile(&clock, ts::ctx(&mut scenario));
+            transfer::public_transfer(profile, BOB);
         };
 
         // Alice publishes tier-gated content (requires VIDEO tier = 3)
@@ -432,8 +437,9 @@ module tai::security_tests {
         ts::next_tx(&mut scenario, BOB);
         {
             let mut pred = ts::take_shared<Prediction>(&scenario);
-            prediction::claim_winnings(&mut pred, &clock, ts::ctx(&mut scenario));
+            let coin = prediction::claim_winnings(&mut pred, &clock, ts::ctx(&mut scenario));
             ts::return_shared(pred);
+            transfer::public_transfer(coin, BOB);
         };
 
         clock::destroy_for_testing(clock);
@@ -451,7 +457,8 @@ module tai::security_tests {
         // Create profile and room
         ts::next_tx(&mut scenario, ALICE);
         {
-            user_profile::create_and_transfer(&clock, ts::ctx(&mut scenario));
+            let profile = user_profile::create_profile(&clock, ts::ctx(&mut scenario));
+            transfer::public_transfer(profile, ALICE);
         };
 
         ts::next_tx(&mut scenario, ALICE);
@@ -506,7 +513,8 @@ module tai::security_tests {
         // Create profile and room
         ts::next_tx(&mut scenario, ALICE);
         {
-            user_profile::create_and_transfer(&clock, ts::ctx(&mut scenario));
+            let profile = user_profile::create_profile(&clock, ts::ctx(&mut scenario));
+            transfer::public_transfer(profile, ALICE);
         };
 
         ts::next_tx(&mut scenario, ALICE);

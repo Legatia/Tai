@@ -1,9 +1,6 @@
 /// Module: points
 /// Soulbound points tracking for future token airdrop
 module tai::points {
-    use sui::object::{Self, UID, ID};
-    use sui::tx_context::{Self, TxContext};
-    use sui::transfer;
     use sui::event;
     use sui::table::{Self, Table};
     use tai::user_profile::{Self, UserProfile};
@@ -95,11 +92,11 @@ module tai::points {
     ) {
         let points = minutes * POINTS_PER_MINUTE_STREAMING;
         let user = tx_context::sender(ctx);
-        
+
         ensure_breakdown_exists(registry, user, ctx);
         let breakdown = table::borrow_mut(&mut registry.activity_breakdown, user);
         breakdown.streaming_minutes = breakdown.streaming_minutes + minutes;
-        
+
         award_points_internal(registry, profile, user, points, 0, ctx);
     }
 
@@ -112,11 +109,11 @@ module tai::points {
     ) {
         let points = minutes * POINTS_PER_MINUTE_WATCHING;
         let user = tx_context::sender(ctx);
-        
+
         ensure_breakdown_exists(registry, user, ctx);
         let breakdown = table::borrow_mut(&mut registry.activity_breakdown, user);
         breakdown.watching_minutes = breakdown.watching_minutes + minutes;
-        
+
         award_points_internal(registry, profile, user, points, 1, ctx);
     }
 
@@ -129,11 +126,11 @@ module tai::points {
     ) {
         let points = amount_sui * POINTS_PER_SUI_TIPPED_SENT;
         let user = tx_context::sender(ctx);
-        
+
         ensure_breakdown_exists(registry, user, ctx);
         let breakdown = table::borrow_mut(&mut registry.activity_breakdown, user);
         breakdown.tips_sent_sui = breakdown.tips_sent_sui + amount_sui;
-        
+
         award_points_internal(registry, profile, user, points, 2, ctx);
     }
 
@@ -146,13 +143,13 @@ module tai::points {
         _ctx: &mut TxContext
     ) {
         let points = amount_sui * POINTS_PER_SUI_TIPPED_RECEIVED;
-        
+
         // Update profile
         user_profile::add_points(profile, points);
-        
+
         // Update registry
         registry.total_points_issued = registry.total_points_issued + points;
-        
+
         event::emit(PointsAwarded {
             user: recipient,
             amount: points,
@@ -170,11 +167,11 @@ module tai::points {
     ) {
         let points = amount_sui * POINTS_PER_SUI_BET;
         let user = tx_context::sender(ctx);
-        
+
         ensure_breakdown_exists(registry, user, ctx);
         let breakdown = table::borrow_mut(&mut registry.activity_breakdown, user);
         breakdown.bets_placed_sui = breakdown.bets_placed_sui + amount_sui;
-        
+
         award_points_internal(registry, profile, user, points, 4, ctx);
     }
 
@@ -186,11 +183,11 @@ module tai::points {
     ) {
         let points = POINTS_PER_PREDICTION_WIN;
         let user = tx_context::sender(ctx);
-        
+
         ensure_breakdown_exists(registry, user, ctx);
         let breakdown = table::borrow_mut(&mut registry.activity_breakdown, user);
         breakdown.predictions_won = breakdown.predictions_won + 1;
-        
+
         award_points_internal(registry, profile, user, points, 5, ctx);
     }
 
@@ -216,12 +213,12 @@ module tai::points {
     ) {
         // Update profile
         user_profile::add_points(profile, points);
-        
+
         // Update registry total
         registry.total_points_issued = registry.total_points_issued + points;
-        
+
         let total = user_profile::total_points(profile);
-        
+
         // Emit event
         event::emit(PointsAwarded {
             user,

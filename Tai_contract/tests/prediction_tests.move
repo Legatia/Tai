@@ -1,7 +1,7 @@
 #[test_only]
 module tai::prediction_tests {
     use sui::test_scenario::{Self as ts, Scenario};
-    use sui::coin::{Self, Coin};
+    use sui::coin::{Self};
     use sui::sui::SUI;
     use sui::clock::{Self, Clock};
     use tai::prediction::{Self, Prediction};
@@ -21,18 +21,21 @@ module tai::prediction_tests {
 
         ts::next_tx(&mut scenario, ALICE);
         {
-            let pred = prediction::create_prediction(
+            prediction::create_and_share(
                 std::string::utf8(b"Will I hit 1000 viewers?"),
                 3600000, // 1 hour
                 &clock,
                 ts::ctx(&mut scenario)
             );
+        };
 
+        ts::next_tx(&mut scenario, ALICE);
+        {
+            let pred = ts::take_shared<Prediction>(&scenario);
             assert!(prediction::is_open(&pred), 0);
             assert!(prediction::total_pool(&pred) == 0, 1);
             assert!(prediction::creator(&pred) == ALICE, 2);
-
-            sui::transfer::public_share_object(pred);
+            ts::return_shared(pred);
         };
 
         clock::destroy_for_testing(clock);
@@ -42,7 +45,7 @@ module tai::prediction_tests {
     #[test]
     fun test_place_bet() {
         let mut scenario = ts::begin(ALICE);
-        let mut clock = setup_clock(&mut scenario);
+        let clock = setup_clock(&mut scenario);
 
         // Create prediction
         ts::next_tx(&mut scenario, ALICE);
@@ -91,7 +94,7 @@ module tai::prediction_tests {
     #[test]
     fun test_resolve_prediction() {
         let mut scenario = ts::begin(ALICE);
-        let mut clock = setup_clock(&mut scenario);
+        let clock = setup_clock(&mut scenario);
 
         // Create prediction
         ts::next_tx(&mut scenario, ALICE);

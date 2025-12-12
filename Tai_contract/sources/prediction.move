@@ -1,9 +1,6 @@
 /// Module: prediction
 /// Prediction markets for stream outcomes with betting
 module tai::prediction {
-    use sui::object::{Self, UID, ID};
-    use sui::tx_context::{Self, TxContext};
-    use sui::transfer;
     use sui::coin::{Self, Coin};
     use sui::balance::{Self, Balance};
     use sui::sui::SUI;
@@ -28,7 +25,7 @@ module tai::prediction {
     // ========== Structs ==========
 
     /// Prediction market
-    public struct Prediction has key, store {
+    public struct Prediction has key {
         id: UID,
         creator: address,
         question: String,
@@ -82,7 +79,7 @@ module tai::prediction {
     // ========== Public Functions ==========
 
     /// Create a new prediction
-    public fun create_prediction(
+    fun create_prediction(
         question: String,
         duration_ms: u64,
         clock: &Clock,
@@ -204,7 +201,7 @@ module tai::prediction {
         prediction: &mut Prediction,
         clock: &Clock,
         ctx: &mut TxContext
-    ) {
+    ): Coin<SUI> {
         let now = clock::timestamp_ms(clock);
         assert!(prediction.resolution != 0, ENotResolved);
         assert!(now >= prediction.challenge_window_end, EInChallengeWindow);
@@ -244,13 +241,14 @@ module tai::prediction {
         vec_map::remove(&mut prediction.bets, &winner);
 
         let payout_coin = coin::from_balance(payout_balance, ctx);
-        transfer::public_transfer(payout_coin, winner);
 
         event::emit(WinningsClaimed {
             prediction_id: object::id(prediction),
             winner,
             amount: payout,
         });
+
+        payout_coin
     }
 
     // ========== View Functions ==========

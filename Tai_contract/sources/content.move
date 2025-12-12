@@ -1,9 +1,6 @@
 /// Module: content
 /// VOD content management, pay-per-view, and subscriptions
 module tai::content {
-    use sui::object::{Self, UID, ID};
-    use sui::tx_context::{Self, TxContext};
-    use sui::transfer;
     use sui::coin::{Self, Coin};
     use sui::sui::SUI;
     use sui::event;

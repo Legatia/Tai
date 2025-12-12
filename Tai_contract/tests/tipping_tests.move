@@ -23,12 +23,14 @@ module tai::tipping_tests {
         // Create profiles for both users
         ts::next_tx(&mut scenario, ALICE);
         {
-            user_profile::create_and_transfer(&clock, ts::ctx(&mut scenario));
+            let profile = user_profile::create_profile(&clock, ts::ctx(&mut scenario));
+            transfer::public_transfer(profile, ALICE);
         };
 
         ts::next_tx(&mut scenario, BOB);
         {
-            user_profile::create_and_transfer(&clock, ts::ctx(&mut scenario));
+            let profile = user_profile::create_profile(&clock, ts::ctx(&mut scenario));
+            transfer::public_transfer(profile, BOB);
         };
 
         // Alice tips Bob

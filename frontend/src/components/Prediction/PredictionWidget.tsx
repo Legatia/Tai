@@ -1,9 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { useCurrentAccount, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
+import { useState, useEffect } from 'react';
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
 import { TrendingUp, TrendingDown, Clock, Users, Loader2, CheckCircle } from 'lucide-react';
+
+// TODO: Update with actual deployed package ID
+const PACKAGE_ID = process.env.NEXT_PUBLIC_PACKAGE_ID || '0x0';
+const CLOCK_ID = '0x6'; // Sui system clock object ID
 
 export interface Prediction {
     id: string;
@@ -22,22 +26,10 @@ interface PredictionWidgetProps {
     className?: string;
 }
 
-// Mock predictions for demonstration
-const MOCK_PREDICTIONS: Prediction[] = [
-    {
-        id: '1',
-        question: 'Will I hit 1000 viewers today?',
-        yesPool: 45.5,
-        noPool: 32.1,
-        endTime: Date.now() + 3600000,
-        status: 'open',
-        creatorAddress: '0x123...'
-    }
-];
-
 export default function PredictionWidget({ roomId, isHost = false, className }: PredictionWidgetProps) {
     const account = useCurrentAccount();
-    const [predictions, setPredictions] = useState<Prediction[]>(MOCK_PREDICTIONS);
+    const suiClient = useSuiClient();
+    const [predictions, setPredictions] = useState<Prediction[]>([]);
     const [selectedPrediction, setSelectedPrediction] = useState<Prediction | null>(null);
     const [betAmount, setBetAmount] = useState('1');
     const [betSide, setBetSide] = useState<'yes' | 'no'>('yes');
@@ -45,10 +37,29 @@ export default function PredictionWidget({ roomId, isHost = false, className }: 
 
     // Create prediction modal state
     const [isCreating, setIsCreating] = useState(false);
+    const [createStatus, setCreateStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [newQuestion, setNewQuestion] = useState('');
     const [duration, setDuration] = useState(30); // minutes
 
     const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+
+    // Load predictions from blockchain
+    useEffect(() => {
+        const loadPredictions = async () => {
+            if (!suiClient) return;
+
+            try {
+                // TODO: Query shared Prediction objects from the blockchain
+                // This requires indexing or querying by type
+                // For now, keep empty until indexer is set up
+                // const objects = await suiClient.getOwnedObjects({...});
+            } catch (error) {
+                console.error('Failed to load predictions:', error);
+            }
+        };
+
+        loadPredictions();
+    }, [suiClient]);
 
     const handleBet = async (prediction: Prediction, side: 'yes' | 'no', amount: number) => {
         if (!account) return;
@@ -57,21 +68,26 @@ export default function PredictionWidget({ roomId, isHost = false, className }: 
 
         try {
             const tx = new Transaction();
-            const amountInMist = BigInt(amount * 1_000_000_000);
+            const amountInMist = tx.splitCoins(tx.gas, [amount * 1_000_000_000]);
 
-            // For MVP: Transfer to prediction pool address
-            // In production: Call prediction smart contract
-            const PREDICTION_POOL = '0x0000000000000000000000000000000000000000000000000000000000000002';
-
-            const [coin] = tx.splitCoins(tx.gas, [amountInMist]);
-            tx.transferObjects([coin], PREDICTION_POOL);
+            tx.moveCall({
+                target: `${PACKAGE_ID}::prediction::place_bet`,
+                arguments: [
+                    tx.object(prediction.id), // Prediction object ID
+                    tx.pure.bool(side === 'yes'), // side: true = YES, false = NO
+                    amountInMist[0], // payment coin
+                    tx.object(CLOCK_ID), // clock
+                ],
+            });
 
             signAndExecute(
                 { transaction: tx },
                 {
-                    onSuccess: () => {
+                    onSuccess: (result) => {
+                        console.log('Bet placed successfully:', result);
                         setStatus('success');
-                        // Update local state
+
+                        // Update local state optimistically
                         setPredictions(prev => prev.map(p => {
                             if (p.id === prediction.id) {
                                 return {
@@ -82,35 +98,71 @@ export default function PredictionWidget({ roomId, isHost = false, className }: 
                             }
                             return p;
                         }));
+
                         setTimeout(() => {
                             setStatus('idle');
                             setSelectedPrediction(null);
                         }, 2000);
                     },
-                    onError: () => setStatus('idle'),
+                    onError: (error) => {
+                        console.error('Failed to place bet:', error);
+                        setStatus('idle');
+                    },
                 }
             );
-        } catch {
+        } catch (error) {
+            console.error('Error placing bet:', error);
             setStatus('idle');
         }
     };
 
-    const handleCreatePrediction = () => {
-        if (!newQuestion.trim()) return;
+    const handleCreatePrediction = async () => {
+        if (!account || !newQuestion.trim()) return;
 
-        const newPrediction: Prediction = {
-            id: crypto.randomUUID(),
-            question: newQuestion,
-            yesPool: 0,
-            noPool: 0,
-            endTime: Date.now() + duration * 60 * 1000,
-            status: 'open',
-            creatorAddress: account?.address || ''
-        };
+        setCreateStatus('loading');
 
-        setPredictions(prev => [newPrediction, ...prev]);
-        setNewQuestion('');
-        setIsCreating(false);
+        try {
+            const tx = new Transaction();
+            const durationMs = duration * 60 * 1000; // Convert minutes to milliseconds
+
+            tx.moveCall({
+                target: `${PACKAGE_ID}::prediction::create_and_share`,
+                arguments: [
+                    tx.pure.string(newQuestion),
+                    tx.pure.u64(durationMs),
+                    tx.object(CLOCK_ID),
+                ],
+            });
+
+            signAndExecute(
+                { transaction: tx },
+                {
+                    onSuccess: (result) => {
+                        console.log('Prediction created successfully:', result);
+                        setCreateStatus('success');
+
+                        // Extract the created prediction ID from events
+                        // In production, you'd parse the PredictionCreated event
+                        // For now, we'll need to refresh the predictions list
+
+                        setNewQuestion('');
+                        setTimeout(() => {
+                            setCreateStatus('idle');
+                            setIsCreating(false);
+                        }, 2000);
+                    },
+                    onError: (error) => {
+                        console.error('Failed to create prediction:', error);
+                        setCreateStatus('error');
+                        setTimeout(() => setCreateStatus('idle'), 3000);
+                    },
+                }
+            );
+        } catch (error) {
+            console.error('Error creating prediction:', error);
+            setCreateStatus('error');
+            setTimeout(() => setCreateStatus('idle'), 3000);
+        }
     };
 
     const calculateOdds = (prediction: Prediction) => {
@@ -164,13 +216,15 @@ export default function PredictionWidget({ roomId, isHost = false, className }: 
                         value={newQuestion}
                         onChange={(e) => setNewQuestion(e.target.value)}
                         placeholder="Ask a question..."
-                        className="w-full bg-neutral-950 border border-white/10 rounded-lg px-3 py-2 text-white text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                        disabled={createStatus === 'loading'}
+                        className="w-full bg-neutral-950 border border-white/10 rounded-lg px-3 py-2 text-white text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-purple-500/50 disabled:opacity-50"
                     />
                     <div className="flex items-center gap-2">
                         <select
                             value={duration}
                             onChange={(e) => setDuration(Number(e.target.value))}
-                            className="flex-1 bg-neutral-950 border border-white/10 rounded-lg px-3 py-2 text-white text-sm"
+                            disabled={createStatus === 'loading'}
+                            className="flex-1 bg-neutral-950 border border-white/10 rounded-lg px-3 py-2 text-white text-sm disabled:opacity-50"
                         >
                             <option value={5}>5 minutes</option>
                             <option value={15}>15 minutes</option>
@@ -179,17 +233,28 @@ export default function PredictionWidget({ roomId, isHost = false, className }: 
                         </select>
                         <button
                             onClick={handleCreatePrediction}
-                            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
+                            disabled={createStatus === 'loading' || !newQuestion.trim()}
+                            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                         >
-                            Create
+                            {createStatus === 'loading' && <Loader2 className="w-4 h-4 animate-spin" />}
+                            {createStatus === 'success' && <CheckCircle className="w-4 h-4" />}
+                            {createStatus === 'loading' ? 'Creating...' : createStatus === 'success' ? 'Created!' : 'Create'}
                         </button>
                         <button
-                            onClick={() => setIsCreating(false)}
-                            className="px-4 py-2 bg-white/5 hover:bg-white/10 text-neutral-300 text-sm rounded-lg transition-colors"
+                            onClick={() => {
+                                setIsCreating(false);
+                                setNewQuestion('');
+                                setCreateStatus('idle');
+                            }}
+                            disabled={createStatus === 'loading'}
+                            className="px-4 py-2 bg-white/5 hover:bg-white/10 text-neutral-300 text-sm rounded-lg transition-colors disabled:opacity-50"
                         >
                             Cancel
                         </button>
                     </div>
+                    {createStatus === 'error' && (
+                        <p className="mt-2 text-red-400 text-xs">Failed to create prediction. Please try again.</p>
+                    )}
                 </div>
             )}
 

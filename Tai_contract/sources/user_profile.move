@@ -1,9 +1,6 @@
 /// Module: user_profile
 /// User identity, staking tiers, and profile management
 module tai::user_profile {
-    use sui::object::{Self, UID, ID};
-    use sui::tx_context::{Self, TxContext};
-    use sui::transfer;
     use sui::coin::{Self, Coin};
     use sui::balance::{Self, Balance};
     use sui::sui::SUI;
@@ -85,12 +82,6 @@ module tai::user_profile {
         profile
     }
 
-    /// Create and transfer profile to sender
-    public fun create_and_transfer(clock: &Clock, ctx: &mut TxContext) {
-        let profile = create_profile(clock, ctx);
-        transfer::public_transfer(profile, tx_context::sender(ctx));
-    }
-
     /// Stake SUI to upgrade tier
     public fun stake_for_tier(
         profile: &mut UserProfile,
@@ -122,7 +113,7 @@ module tai::user_profile {
     public fun unstake(
         profile: &mut UserProfile,
         ctx: &mut TxContext
-    ) {
+    ): Coin<SUI> {
         let amount = balance::value(&profile.staked_balance);
         assert!(amount > 0, ENoStakedBalance);
 
@@ -137,7 +128,7 @@ module tai::user_profile {
             new_tier: TIER_FREE,
         });
 
-        transfer::public_transfer(coin, tx_context::sender(ctx));
+        coin
     }
 
     // ========== View Functions ==========

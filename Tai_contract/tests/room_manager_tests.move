@@ -17,7 +17,8 @@ module tai::room_manager_tests {
 
     fun create_video_profile(scenario: &mut Scenario, clock: &Clock, addr: address) {
         ts::next_tx(scenario, addr);
-        user_profile::create_and_transfer(clock, ts::ctx(scenario));
+        let profile = user_profile::create_profile(clock, ts::ctx(scenario));
+        transfer::public_transfer(profile, addr);
 
         ts::next_tx(scenario, addr);
         let mut profile = ts::take_from_sender<UserProfile>(scenario);
@@ -160,7 +161,8 @@ module tai::room_manager_tests {
         // Create profile WITHOUT staking (FREE tier)
         ts::next_tx(&mut scenario, ALICE);
         {
-            user_profile::create_and_transfer(&clock, ts::ctx(&mut scenario));
+            let profile = user_profile::create_profile(&clock, ts::ctx(&mut scenario));
+            transfer::public_transfer(profile, ALICE);
         };
 
         // Try to create video room (should fail)
