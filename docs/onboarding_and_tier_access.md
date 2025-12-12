@@ -59,10 +59,10 @@ interface AppBalance {
 
 | Tier | Stake Path | Proof of Fame | Proof of Effort | Features |
 |------|-----------|---------------|-----------------|----------|
-| **Audio** | Free | N/A | Free | Voice-only |
-| **Podcast** | 50 SUI | 10K followers | Graduate from Effort(10hrs/week) | Audio + screen share |
-| **Video** | 200 SUI | 100K followers | Graduate from Effort(10hrs/week) | Full video streaming |
-| **Premium** | 1000 SUI | 200K followers | Graduate from Effort(10hrs/week) | Priority routing, custom branding |
+| **Audio** | 1 SUI | N/A | Free | Voice-only |
+| **Podcast** | 10 SUI | 10K followers | Graduate from Effort(10hrs/week) | Audio + screen share |
+| **Video** | 50 SUI | 100K followers | Graduate from Effort(10hrs/week) | Full video streaming |
+| **Premium** | 100 SUI | 200K followers | Graduate from Effort(10hrs/week) | Priority routing, custom branding |
 
 ---
 
@@ -130,7 +130,7 @@ if (meetsProofOfFameCriteria(credentials)) {
 **Why These Numbers:**
 - $50/week × 8 weeks = $400 total value
 - At 5% platform cut on predictions = $20 platform revenue
-- Replaces what we'd earn from a 200 SUI stake (~$150-200)
+- Replaces what we'd earn from a 50 SUI stake (~$40-50)
 - Proves streamer can sustain audience and monetization
 
 ---

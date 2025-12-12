@@ -1,17 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import { Copy, Eye, EyeOff, Radio, Settings, Activity, Users, DollarSign } from 'lucide-react';
+import { Radio, Settings, Activity, Users, DollarSign, Eye, Edit3, Camera, Twitter, Globe, Zap } from 'lucide-react';
 
 export default function DashboardPage() {
-    const [showKey, setShowKey] = useState(false);
     const [isLive, setIsLive] = useState(false);
-    const [streamKey] = useState('live_54321_AbCdEfGhIjKlMnOpQrStUvWxYz');
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
 
-    const copyToClipboard = (text: string) => {
-        navigator.clipboard.writeText(text);
-        // In a real app, we'd show a toast here
-    };
+    // Mock profile data (in production, fetch from contract/backend)
+    const [profile, setProfile] = useState({
+        name: 'CryptoStreamer',
+        bio: 'Building the future of decentralized streaming 🚀',
+        avatar: '/IMG_2262.png',
+        tier: 'Video',
+        tierLevel: 3,
+        followers: 843,
+        twitter: '@cryptostreamer',
+        website: 'https://tai.gg'
+    });
 
     return (
         <div className="p-6 md:p-8 max-w-6xl mx-auto">
@@ -35,6 +41,91 @@ export default function DashboardPage() {
                     >
                         {isLive ? 'End Stream' : 'Go Live'}
                     </button>
+                </div>
+            </div>
+
+            {/* Profile Card */}
+            <div className="mb-8 p-6 bg-neutral-900/50 border border-white/5 rounded-2xl">
+                <div className="flex flex-col md:flex-row gap-6">
+                    {/* Avatar */}
+                    <div className="relative group">
+                        <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-purple-500/50">
+                            <img
+                                src={profile.avatar}
+                                alt={profile.name}
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                        <button className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl">
+                            <Camera className="w-6 h-6 text-white" />
+                        </button>
+                    </div>
+
+                    {/* Profile Info */}
+                    <div className="flex-1">
+                        <div className="flex items-start justify-between gap-4">
+                            <div>
+                                <div className="flex items-center gap-3 mb-2">
+                                    {isEditingProfile ? (
+                                        <input
+                                            type="text"
+                                            value={profile.name}
+                                            onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                                            className="bg-neutral-950 border border-white/10 rounded-lg px-3 py-1 text-xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                                        />
+                                    ) : (
+                                        <h2 className="text-xl font-bold text-white">{profile.name}</h2>
+                                    )}
+                                    <span className={`px-2 py-0.5 text-xs font-bold rounded-full flex items-center gap-1 ${profile.tierLevel >= 3 ? 'bg-purple-500/20 text-purple-400' :
+                                            profile.tierLevel >= 2 ? 'bg-blue-500/20 text-blue-400' :
+                                                'bg-gray-500/20 text-gray-400'
+                                        }`}>
+                                        <Zap className="w-3 h-3" />
+                                        {profile.tier}
+                                    </span>
+                                </div>
+
+                                {isEditingProfile ? (
+                                    <textarea
+                                        value={profile.bio}
+                                        onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                                        className="w-full bg-neutral-950 border border-white/10 rounded-lg px-3 py-2 text-sm text-neutral-300 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none"
+                                        rows={2}
+                                    />
+                                ) : (
+                                    <p className="text-neutral-400 text-sm mb-3">{profile.bio}</p>
+                                )}
+
+                                {/* Social Links */}
+                                <div className="flex items-center gap-4 mt-3">
+                                    <a href={`https://twitter.com/${profile.twitter.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-blue-400 transition-colors">
+                                        <Twitter className="w-4 h-4" />
+                                        {profile.twitter}
+                                    </a>
+                                    <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-purple-400 transition-colors">
+                                        <Globe className="w-4 h-4" />
+                                        {profile.website.replace('https://', '')}
+                                    </a>
+                                    <span className="text-xs text-neutral-500">
+                                        <Users className="w-4 h-4 inline mr-1" />
+                                        {profile.followers} followers
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Edit Button */}
+                            <button
+                                onClick={() => setIsEditingProfile(!isEditingProfile)}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${isEditingProfile
+                                        ? 'bg-purple-600 text-white'
+                                        : 'bg-white/5 hover:bg-white/10 text-neutral-300'
+                                    }`}
+                            >
+                                <Edit3 className="w-4 h-4" />
+                                {isEditingProfile ? 'Save' : 'Edit Profile'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -92,48 +183,33 @@ export default function DashboardPage() {
 
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-neutral-400 mb-2">Stream Server URL</label>
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            value="rtmp://ingest.tai.io/live"
-                                            readOnly
-                                            className="flex-1 bg-neutral-950 border border-white/10 rounded-xl px-4 py-3 text-neutral-400 font-mono text-sm"
-                                        />
-                                        <button
-                                            onClick={() => copyToClipboard('rtmp://ingest.tai.io/live')}
-                                            className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-white transition-colors"
-                                        >
-                                            <Copy className="w-5 h-5" />
-                                        </button>
-                                    </div>
+                                    <label className="block text-sm font-medium text-neutral-400 mb-2">Camera</label>
+                                    <select className="w-full bg-neutral-950 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all">
+                                        <option>FaceTime HD Camera</option>
+                                        <option>External Webcam</option>
+                                        <option>No Camera (Audio Only)</option>
+                                    </select>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-neutral-400 mb-2">Stream Key</label>
-                                    <div className="flex gap-2">
-                                        <div className="flex-1 relative">
-                                            <input
-                                                type={showKey ? "text" : "password"}
-                                                value={streamKey}
-                                                readOnly
-                                                className="w-full bg-neutral-950 border border-white/10 rounded-xl px-4 py-3 text-neutral-400 font-mono text-sm"
-                                            />
-                                            <button
-                                                onClick={() => setShowKey(!showKey)}
-                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition-colors"
-                                            >
-                                                {showKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                                            </button>
-                                        </div>
-                                        <button
-                                            onClick={() => copyToClipboard(streamKey)}
-                                            className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-white transition-colors"
-                                        >
-                                            <Copy className="w-5 h-5" />
-                                        </button>
-                                    </div>
+                                    <label className="block text-sm font-medium text-neutral-400 mb-2">Microphone</label>
+                                    <select className="w-full bg-neutral-950 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all">
+                                        <option>MacBook Pro Microphone</option>
+                                        <option>External Microphone</option>
+                                        <option>AirPods Pro</option>
+                                    </select>
                                 </div>
+                            </div>
+
+                            <div className="flex items-center gap-4 pt-2">
+                                <label className="flex items-center gap-3 cursor-pointer">
+                                    <input type="checkbox" className="w-5 h-5 rounded bg-neutral-950 border-white/10 text-purple-500 focus:ring-purple-500/50" defaultChecked />
+                                    <span className="text-sm text-neutral-300">Share Screen</span>
+                                </label>
+                                <label className="flex items-center gap-3 cursor-pointer">
+                                    <input type="checkbox" className="w-5 h-5 rounded bg-neutral-950 border-white/10 text-purple-500 focus:ring-purple-500/50" defaultChecked />
+                                    <span className="text-sm text-neutral-300">Enable Chat</span>
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -144,13 +220,16 @@ export default function DashboardPage() {
                     <div className="p-6 bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-purple-500/20 rounded-2xl">
                         <h3 className="text-lg font-bold text-white mb-4">Quick Start Guide</h3>
                         <ol className="space-y-4 text-sm text-neutral-300 list-decimal list-inside">
-                            <li>Copy your <strong>Stream Key</strong></li>
-                            <li>Open OBS Studio or Streamlabs</li>
-                            <li>Go to Settings {'>'} Stream</li>
-                            <li>Select "Custom" service</li>
-                            <li>Paste Server URL and Stream Key</li>
-                            <li>Start Streaming!</li>
+                            <li>Set your <strong>Stream Title</strong> and Category</li>
+                            <li>Select your <strong>Camera</strong> and Microphone</li>
+                            <li>Enable Screen Share if presenting</li>
+                            <li>Click <strong>"Go Live"</strong> to start streaming!</li>
                         </ol>
+                        <div className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
+                            <p className="text-xs text-green-400">
+                                ✨ <strong>P2P Streaming</strong> — Low latency, direct to viewers. No external software needed!
+                            </p>
+                        </div>
                     </div>
 
                     <div className="p-6 bg-neutral-900/50 border border-white/5 rounded-2xl">

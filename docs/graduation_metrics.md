@@ -8,7 +8,7 @@ Both **Proof of Fame** and **Proof of Effort** streamers must demonstrate they b
 ## 🎯 Core Principle
 **Graduation = Replace Staking Revenue**
 
-A streamer who stakes 200 SUI (~$150-200) provides:
+A streamer who stakes 50 SUI (~$40-50) provides:
 - Platform liquidity
 - Commitment signal
 - No active risk
@@ -51,13 +51,13 @@ Platform Revenue = (Prediction Volume × 5%) + (Tips × 0%)
 ## 💰 Why $200 Total?
 
 **Economic Logic:**
-- 200 SUI stake ≈ $150-200 value (at $0.75-1.00/SUI)
+- 50 SUI stake ≈ $40-50 value (at $0.75-1.00/SUI)
 - Staker contributes: Capital lock, no active value
-- Free-tier streamer contributes: $200 in revenue + viewer growth
+- Free-tier streamer contributes: $50 in revenue + viewer growth
 - **Result:** Free-tier creates MORE value than staking
 
 **Sustainability:**
-- Platform earns $200 from free-tier vs. $0 from staker
+- Platform earns $50 from free-tier vs. $0 from staker
 - Proves streamer can sustain audience and monetization
 - Filters out low-effort trial users
 

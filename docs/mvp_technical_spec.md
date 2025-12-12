@@ -117,10 +117,10 @@ module tai::user_profile {
     }
     
     // Tier requirements (in SUI, 1 SUI = 1e9 MIST)
-    const TIER_AUDIO: u64 = 10_000_000_000;       // 10 SUI
-    const TIER_PODCAST: u64 = 50_000_000_000;     // 50 SUI
-    const TIER_VIDEO: u64 = 200_000_000_000;      // 200 SUI
-    const TIER_PREMIUM: u64 = 1_000_000_000_000;  // 1000 SUI
+    const TIER_AUDIO: u64 = 1_000_000_000;         // 1 SUI
+    const TIER_PODCAST: u64 = 10_000_000_000;      // 10 SUI
+    const TIER_VIDEO: u64 = 50_000_000_000;        // 50 SUI
+    const TIER_PREMIUM: u64 = 100_000_000_000;     // 100 SUI
     
     // Proof of Fame/Effort constants
     const TRIAL_DURATION_MS: u64 = 5_184_000_000;  // 60 days

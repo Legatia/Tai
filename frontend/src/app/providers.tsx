@@ -19,6 +19,7 @@ const queryClient = new QueryClient();
 // Enoki Configuration from environment variables
 const ENOKI_API_KEY = process.env.NEXT_PUBLIC_ENOKI_API_KEY!;
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
+const TWITCH_CLIENT_ID = process.env.NEXT_PUBLIC_TWITCH_CLIENT_ID!;
 
 function RegisterEnokiWallets() {
     const { client, network } = useSuiClientContext();
@@ -33,6 +34,9 @@ function RegisterEnokiWallets() {
             providers: {
                 google: {
                     clientId: GOOGLE_CLIENT_ID,
+                },
+                twitch: {
+                    clientId: TWITCH_CLIENT_ID,
                 },
             },
             client: client as any,
