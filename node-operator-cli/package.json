@@ -1,0 +1,29 @@
+{
+    "name": "@tai/node-operator",
+    "version": "0.1.0",
+    "description": "Tai Node Operator CLI - Run a TURN relay and earn rewards",
+    "bin": {
+        "tai-node": "./dist/index.js"
+    },
+    "scripts": {
+        "build": "tsc",
+        "start": "node dist/index.js start",
+        "dev": "npm run build && npm start",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "@mysten/enoki": "^0.12.12",
+        "@mysten/sui": "^1.0.0",
+        "@shelby-protocol/sdk": "^0.0.7",
+        "commander": "^10.0.1",
+        "dotenv": "^16.0.3",
+        "node-turn": "^0.0.6",
+        "ws": "^8.13.0"
+    },
+    "devDependencies": {
+        "@types/node": "^18.15.11",
+        "@types/ws": "^8.5.4",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.0.4"
+    }
+}

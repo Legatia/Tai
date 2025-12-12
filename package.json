@@ -1,0 +1,14 @@
+{
+  "name": "tai-monorepo",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "node-operator-cli"
+  ],
+  "scripts": {
+    "dev:frontend": "npm run dev -w frontend",
+    "dev:backend": "npm run dev -w backend",
+    "dev:node": "npm run dev -w node-operator-cli"
+  }
+}

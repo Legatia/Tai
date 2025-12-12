@@ -1,0 +1,41 @@
+{
+  "name": "tai-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@mysten/dapp-kit": "0.16.4",
+    "@mysten/enoki": "0.11.9",
+    "@mysten/sui": "1.30.0",
+    "@mysten/zklogin": "^0.8.1",
+    "@tai/p2p-client": "file:../p2p_privacy_layer",
+    "@tanstack/react-query": "^5.90.11",
+    "clsx": "^2.1.1",
+    "isomorphic-ws": "^5.0.0",
+    "jwt-decode": "^4.0.0",
+    "lucide-react": "^0.555.0",
+    "next": "16.0.5",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "tailwind-merge": "^3.4.0",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.5",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
