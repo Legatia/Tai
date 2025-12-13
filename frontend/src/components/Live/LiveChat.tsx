@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Smile, MoreVertical, Users } from 'lucide-react';
+import { Send, Smile, MoreVertical, Users, Coins } from 'lucide-react';
+import { subscribeToPackageEvents, TAI_EVENTS, SurfluxEvent } from '@/utils/surfluxClient';
 
 interface Message {
     id: string;
@@ -9,7 +10,13 @@ interface Message {
     color: string;
     text: string;
     timestamp: number;
+    isTipAlert?: boolean;
+    tipAmount?: string;
 }
+
+// Environment config
+const SURFLUX_API_KEY = process.env.NEXT_PUBLIC_SURFLUX_API_KEY;
+const TAI_PACKAGE_ID = process.env.NEXT_PUBLIC_TAI_PACKAGE_ID;
 
 export default function LiveChat() {
     const [messages, setMessages] = useState<Message[]>([
@@ -18,6 +25,7 @@ export default function LiveChat() {
         { id: '3', user: 'CryptoWhale', color: '#22c55e', text: 'Just staked 5000 TAI!', timestamp: Date.now() - 30000 },
     ]);
     const [inputText, setInputText] = useState('');
+    const [tipAlert, setTipAlert] = useState<{ user: string; amount: string } | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -27,6 +35,44 @@ export default function LiveChat() {
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
+
+    // Subscribe to real-time tip events via Surflux
+    useEffect(() => {
+        if (!SURFLUX_API_KEY || !TAI_PACKAGE_ID) {
+            console.log('Surflux not configured, skipping real-time events');
+            return;
+        }
+
+        const unsubscribe = subscribeToPackageEvents({
+            apiKey: SURFLUX_API_KEY,
+            network: 'testnet',
+            packageId: TAI_PACKAGE_ID,
+            eventType: 'TipSent',
+            onEvent: (event: SurfluxEvent) => {
+                const { sender, amount } = event.parsedJson;
+                const amountSui = (Number(amount) / 1_000_000_000).toFixed(2);
+
+                // Show animated tip alert
+                setTipAlert({ user: sender.slice(0, 8), amount: amountSui });
+                setTimeout(() => setTipAlert(null), 4000);
+
+                // Add tip message to chat
+                const tipMessage: Message = {
+                    id: event.id,
+                    user: '🎉 TIP',
+                    color: '#fbbf24',
+                    text: `${sender.slice(0, 8)}... tipped ${amountSui} SUI!`,
+                    timestamp: event.timestampMs,
+                    isTipAlert: true,
+                    tipAmount: amountSui,
+                };
+                setMessages(prev => [...prev, tipMessage]);
+            },
+            onError: (error) => console.error('Surflux error:', error),
+        });
+
+        return unsubscribe;
+    }, []);
 
     const handleSendMessage = (e: React.FormEvent) => {
         e.preventDefault();

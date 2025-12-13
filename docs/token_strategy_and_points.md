@@ -27,10 +27,10 @@
 ### Tier Requirements (Updated)
 | Tier | SUI Required | Features |
 |------|--------------|----------|
-| Audio Only | 10 SUI | Voice-only streaming |
-| Podcast | 50 SUI | Audio + screen share |
-| Video | 200 SUI | Full video streaming |
-| Premium | 1,000 SUI | Priority routing, custom branding |
+| Audio Only | 1 SUI | Voice-only streaming |
+| Podcast | 10 SUI | Audio + screen share |
+| Video | 50 SUI | Full video streaming |
+| Premium | 100 SUI | Priority routing, custom branding |
 
 ---
 

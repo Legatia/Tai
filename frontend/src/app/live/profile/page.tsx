@@ -11,10 +11,11 @@ import { Wallet, Zap, Clock, TrendingUp, Crown, Shield, Loader2, CheckCircle, Al
 
 // Tier definitions
 const TIERS = [
-    { level: 0, name: 'Audio Only', stake: 0, description: 'Voice-only streaming', icon: Shield, color: 'gray' },
-    { level: 1, name: 'Podcast', stake: 50, description: 'Audio + screen share', icon: Zap, color: 'blue' },
-    { level: 2, name: 'Video', stake: 200, description: 'Full video streaming', icon: TrendingUp, color: 'purple' },
-    { level: 3, name: 'Premium', stake: 1000, description: 'Priority routing + branding', icon: Crown, color: 'amber' },
+    { level: 0, name: 'Watch Only', stake: 0, description: 'View streams & chat', icon: Shield, color: 'gray' },
+    { level: 1, name: 'Audio Only', stake: 1, description: 'Voice-only streaming', icon: Shield, color: 'green' },
+    { level: 2, name: 'Podcast', stake: 10, description: 'Audio + screen share', icon: Zap, color: 'blue' },
+    { level: 3, name: 'Video', stake: 50, description: 'Full video streaming', icon: TrendingUp, color: 'purple' },
+    { level: 4, name: 'Premium', stake: 100, description: 'Priority routing + branding', icon: Crown, color: 'amber' },
 ];
 
 export default function ProfilePage() {
@@ -164,8 +165,9 @@ export default function ProfilePage() {
                     Stake SUI to unlock higher streaming tiers. Staking is refundable with a 7-day cooldown.
                 </p>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {TIERS.map((tier) => {
+                {/* First row: 4 tiers */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    {TIERS.filter(t => t.level < 4).map((tier) => {
                         const isCurrentTier = tier.level === currentTierLevel;
                         const isUpgrade = tier.level > currentTierLevel;
                         const canAfford = suiBalance >= tier.stake;
@@ -206,13 +208,77 @@ export default function ProfilePage() {
                                             }`}
                                     >
                                         {isProcessing && <Loader2 className="w-4 h-4 animate-spin" />}
-                                        {!canAfford ? 'Insufficient SUI' : isProcessing ? 'Staking...' : `Stake ${tier.stake} SUI`}
+                                        {!canAfford ? 'Insufficient SUI' : isProcessing ? 'Staking...' : tier.stake === 0 ? 'Default' : `Stake ${tier.stake} SUI`}
                                     </button>
                                 ) : null}
                             </div>
                         );
                     })}
                 </div>
+
+                {/* Second row: Premium tier - full width with shiny effect */}
+                {TIERS.filter(t => t.level === 4).map((tier) => {
+                    const isCurrentTier = tier.level === currentTierLevel;
+                    const isUpgrade = tier.level > currentTierLevel;
+                    const canAfford = suiBalance >= tier.stake;
+                    const isProcessing = selectedTier === tier.level && status === 'loading';
+
+                    return (
+                        <div
+                            key={tier.level}
+                            className={`relative overflow-hidden p-6 rounded-xl border-2 transition-all ${isCurrentTier
+                                ? 'border-amber-500 bg-amber-500/10'
+                                : isUpgrade
+                                    ? 'border-amber-500/50 bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-amber-500/10 hover:border-amber-500'
+                                    : 'border-white/5 bg-white/[0.02] opacity-50'
+                                }`}
+                        >
+                            {/* Shiny sweep effect */}
+                            <div className="absolute inset-0 -translate-x-full animate-[shimmer_3s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+                            <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-14 h-14 bg-amber-500/20 rounded-xl flex items-center justify-center">
+                                        <Crown className="w-8 h-8 text-amber-400" />
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <h3 className="font-bold text-white text-xl">{tier.name}</h3>
+                                            <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs font-bold rounded-full">
+                                                ✨ BEST VALUE
+                                            </span>
+                                        </div>
+                                        <p className="text-neutral-400">{tier.description}</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-4">
+                                    <p className="text-2xl font-bold text-amber-400">
+                                        {tier.stake} SUI
+                                    </p>
+
+                                    {isCurrentTier ? (
+                                        <span className="px-4 py-2 bg-amber-500/20 text-amber-400 font-medium rounded-lg">
+                                            Current Tier
+                                        </span>
+                                    ) : isUpgrade ? (
+                                        <button
+                                            onClick={() => handleStake(tier)}
+                                            disabled={!canAfford || isProcessing}
+                                            className={`px-6 py-3 rounded-lg font-bold transition-all flex items-center gap-2 ${canAfford
+                                                ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black'
+                                                : 'bg-neutral-800 text-neutral-500 cursor-not-allowed'
+                                                }`}
+                                        >
+                                            {isProcessing && <Loader2 className="w-4 h-4 animate-spin" />}
+                                            {!canAfford ? 'Insufficient SUI' : isProcessing ? 'Staking...' : 'Unlock Premium'}
+                                        </button>
+                                    ) : null}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
 
             {/* Points Section */}

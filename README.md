@@ -96,7 +96,7 @@ struct Room {
 Three paths to unlock streaming tiers:
 
 1. **Cash (Staking)** — Refundable SUI collateral
-   - Audio: Free | Podcast: 50 SUI | Video: 200 SUI | Premium: 1K SUI
+   - Audio: 1 SUI | Podcast: 10 SUI | Video: 50 SUI | Premium: 100 SUI
 
 2. **Clout (Proof of Fame)** — Verify existing audience (tiered)
    - 10K+ followers → Podcast tier
