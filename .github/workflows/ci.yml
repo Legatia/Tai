@@ -1,0 +1,37 @@
+name: CI
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Node SetUp
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: Install Node Dependencies
+      run: npm install
+
+    - name: Build
+      run: npm run build
+      working-directory: frontend
+
+    - name: Test frontend
+      run: npm test
+      working-directory: frontend
+
+    - name: Install Sui CLI
+      run: |
+        curl -fLJO https://github.com/MystenLabs/sui/releases/download/testnet-v1.62.0/sui-testnet-v1.62.0-ubuntu-x86_64.tgz
+        tar -xzf sui-testnet-v1.62.0-ubuntu-x86_64.tgz
+        sudo mv sui /usr/local/bin/
+        sui --version
+
+    - name: Test Smart Contract
+      run: sui move test
+      working-directory: Tai_contract
