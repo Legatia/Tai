@@ -1,9 +1,6 @@
 /// Module: tipping
 /// Direct SUI tips from viewers to streamers
 module tai::tipping {
-    use sui::object::{Self, ID};
-    use sui::tx_context::{Self, TxContext};
-    use sui::transfer;
     use sui::coin::{Self, Coin};
     use sui::sui::SUI;
     use sui::event;

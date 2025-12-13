@@ -1,9 +1,6 @@
 /// Module: room_manager
 /// Live room creation, joining, and lifecycle management
 module tai::room_manager {
-    use sui::object::{Self, UID, ID};
-    use sui::tx_context::{Self, TxContext};
-    use sui::transfer;
     use sui::event;
     use sui::clock::{Self, Clock};
     use sui::table::{Self, Table};
