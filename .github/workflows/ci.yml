@@ -1,0 +1,31 @@
+name: CI
+
+on:
+	push
+
+jobs:
+	build:
+		runs-on: ubuntu-latest
+
+		steps:
+		- uses: actions/checkout@v4
+
+		- name: Node SetUp
+		uses: actions/setup-node@v4
+		with:
+			node-version: '22'
+
+		- name: Instal Node Dependencies
+		run: npm install
+
+		- name: Build
+		run: npm run build
+		working-directory: frontend
+
+		- name: Test frontend
+		run: npm test
+		working-directory: frontend
+
+		- name: Test Smart Contract
+		run: sui move test
+		working-directory: Tai_contract
