@@ -28,6 +28,9 @@ global.EventSource = MockEventSource as any;
 // Mock fetch for API tests
 global.fetch = jest.fn();
 
+// Mock scrollIntoView for DOM elements
+Element.prototype.scrollIntoView = jest.fn();
+
 // Reset mocks between tests
 beforeEach(() => {
     jest.clearAllMocks();
