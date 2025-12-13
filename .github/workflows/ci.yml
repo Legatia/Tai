@@ -14,7 +14,7 @@ jobs:
       with:
         node-version: '22'
 
-    - name: Instal Node Dependencies
+    - name: Install Node Dependencies
       run: npm install
 
     - name: Build
