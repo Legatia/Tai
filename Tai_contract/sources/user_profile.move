@@ -8,9 +8,12 @@ module tai::user_profile {
     use sui::clock::{Self, Clock};
 
     // ========== Error Codes ==========
+    #[allow(unused_const)]
     const EInsufficientStake: u64 = 0;
+    #[allow(unused_const)]
     const EAlreadyHasProfile: u64 = 1;
     const ENoStakedBalance: u64 = 2;
+    #[allow(unused_const)]
     const ENotOwner: u64 = 3;
 
     // ========== Tier Constants (in MIST, 1 SUI = 1e9 MIST) ==========

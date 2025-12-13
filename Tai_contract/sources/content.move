@@ -9,7 +9,9 @@ module tai::content {
     use tai::user_profile::{Self, UserProfile};
 
     // ========== Error Codes ==========
+    #[allow(unused_const)]
     const ENotOwner: u64 = 0;
+    #[allow(unused_const)]
     const EAlreadyPurchased: u64 = 1;
     const EInsufficientPayment: u64 = 2;
     const EContentNotPaid: u64 = 3;
@@ -19,6 +21,7 @@ module tai::content {
     const ACCESS_FREE: u8 = 0;
     const ACCESS_PAID: u8 = 1;
     const ACCESS_TIER_GATED: u8 = 2;
+    #[allow(unused_const)]
     const ACCESS_SUBSCRIBER: u8 = 3;
 
     // ========== Structs ==========
