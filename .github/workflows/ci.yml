@@ -25,6 +25,13 @@ jobs:
       run: npm test
       working-directory: frontend
 
+    - name: Install Sui CLI
+      run: |
+        curl -fLJO https://github.com/MystenLabs/sui/releases/download/mainnet-v1.XX.X/sui-mainnet-v1.XX.X-ubuntu-x86_64.tgz
+        tar -xzf sui-mainnet-v*.tgz
+        sudo mv sui /usr/local/bin/
+        sui --version
+
     - name: Test Smart Contract
       run: sui move test
       working-directory: Tai_contract
