@@ -3,7 +3,7 @@
 ## Overview
 This document provides detailed technical specifications for the MVP smart contracts, infrastructure, and integration architecture.
 
-**Token Strategy:** For MVP and Phase 1-2, the platform uses **SUI** and **USDC** for all economic activities (staking, tips, predictions). A **Points System** tracks user activity for future token airdrop and revenue share when the native token launches at the end of Phase 2.
+**Token Strategy:** For MVP and Phase 1-2, the platform uses **SUI** for all economic activities (staking, tips, predictions). A **Points System** tracks user activity for future token airdrop and revenue share when the native token launches at the end of Phase 2.
 
 ---
 

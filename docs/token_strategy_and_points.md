@@ -5,24 +5,19 @@
 **Rationale:**
 - Avoid regulatory complexity during bootstrapping
 - No need for DEX liquidity management
-- Users can use tokens they already have (SUI/USDC)
+- Users can use SUI which they already have
 - Focus on product-market fit, not tokenomics
 
 ---
 
 ## 🪙 Currency for MVP (Phase 1-2)
 
-### Accepted Tokens
-1. **SUI** (Primary)
-   - Native Sui token
-   - Used for staking tiers
-   - Used for predictions
-   - Used for tips
-
-2. **USDC** (Secondary)
-   - Stablecoin for risk-averse users
-   - Used for predictions and tips
-   - Not accepted for staking (only SUI)
+### Accepted Token
+**SUI** (Native)
+- Native Sui token
+- Used for staking tiers
+- Used for predictions
+- Used for tips
 
 ### Tier Requirements (Updated)
 | Tier | SUI Required | Features |
@@ -133,11 +128,11 @@ Points are awarded automatically when users:
 
 ### For Users
 - **Clear value accrual** (points = future tokens)
-- **No price volatility** during bootstrapping (SUI/USDC are stable)
+- **No price volatility** during bootstrapping (SUI is established)
 - **Early adopter advantage** (most points during low competition)
 
 ### For Streamers
-- **Immediate earnings** in SUI/USDC (no token dump risk)
+- **Immediate earnings** in SUI (no token dump risk)
 - **Points = future equity** in the platform
 
 ---
@@ -147,7 +142,7 @@ Points are awarded automatically when users:
 All technical and business documents have been updated:
 
 1. ✅ `/docs/mvp_technical_spec.md`
-   - Replaced TAI with SUI/USDC
+   - Replaced TAI with SUI
    - Added complete `points.move` module
    - Updated tier requirements
 
@@ -199,4 +194,4 @@ All technical and business documents have been updated:
 
 ---
 
-This strategy lets us **prove product-market fit** with SUI/USDC while building a **fair token distribution** mechanism that rewards early adopters.
+This strategy lets us **prove product-market fit** with SUI while building a **fair token distribution** mechanism that rewards early adopters.

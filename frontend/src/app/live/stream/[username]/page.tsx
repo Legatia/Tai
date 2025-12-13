@@ -79,7 +79,7 @@ export default function StreamPage() {
 
                     {/* Prediction Widget */}
                     <div className="mt-6">
-                        <PredictionWidget roomId={username} isHost={false} />
+                        <PredictionWidget roomId={username} />
                     </div>
 
                     {/* Stats / About */}

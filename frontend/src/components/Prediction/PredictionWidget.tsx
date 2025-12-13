@@ -22,11 +22,10 @@ export interface Prediction {
 
 interface PredictionWidgetProps {
     roomId: string;
-    isHost?: boolean;
     className?: string;
 }
 
-export default function PredictionWidget({ roomId, isHost = false, className }: PredictionWidgetProps) {
+export default function PredictionWidget({ roomId, className }: PredictionWidgetProps) {
     const account = useCurrentAccount();
     const suiClient = useSuiClient();
     const [predictions, setPredictions] = useState<Prediction[]>([]);
@@ -198,14 +197,12 @@ export default function PredictionWidget({ roomId, isHost = false, className }: 
                     <TrendingUp className="w-4 h-4 text-purple-400" />
                     Predictions
                 </h3>
-                {isHost && (
-                    <button
-                        onClick={() => setIsCreating(true)}
-                        className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium rounded-lg transition-colors"
-                    >
-                        + Create
-                    </button>
-                )}
+                <button
+                    onClick={() => setIsCreating(true)}
+                    className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium rounded-lg transition-colors"
+                >
+                    + Create
+                </button>
             </div>
 
             {/* Create Prediction Form */}
@@ -334,8 +331,8 @@ export default function PredictionWidget({ roomId, isHost = false, className }: 
                                                 onClick={() => handleBet(prediction, betSide, parseFloat(betAmount))}
                                                 disabled={status === 'loading'}
                                                 className={`flex-1 px-4 py-2 font-medium text-sm rounded-lg transition-colors flex items-center justify-center gap-2 ${betSide === 'yes'
-                                                        ? 'bg-green-500 hover:bg-green-600 text-white'
-                                                        : 'bg-red-500 hover:bg-red-600 text-white'
+                                                    ? 'bg-green-500 hover:bg-green-600 text-white'
+                                                    : 'bg-red-500 hover:bg-red-600 text-white'
                                                     }`}
                                             >
                                                 {status === 'loading' && <Loader2 className="w-4 h-4 animate-spin" />}
