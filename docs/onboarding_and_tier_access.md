@@ -17,39 +17,30 @@ Users can unlock streaming tiers through **three paths**:
 ## 💰 In-App Balance System
 
 ### Problem
-Showing "50 USDC on Sui" scares non-crypto users. They need to see "$50.00" like Venmo or PayPal.
+Showing "50 SUI" scares non-crypto users. They need familiar USD equivalents.
 
-### Solution: USDC as USD Display
+### Solution: USD Display with SUI Backend
 
-**For zkLogin Users (Custodial)**
+**Implementation:**
 ```typescript
 interface AppBalance {
-  displayBalance: "$50.00",  // User sees this
-  actualBalance: 50_000_000,  // 50 USDC (6 decimals) on-chain
-  custodial: true
-}
-```
-
-**For Web3 Users (Non-Custodial)**
-```typescript
-interface AppBalance {
-  displayBalance: "$50.00",  // Queried from their wallet USDC balance
-  actualBalance: null,  // They control their own wallet
-  custodial: false
+  displayBalance: "$50.00",  // User sees USD equivalent
+  suiBalance: 25_000_000_000,  // 25 SUI (9 decimals) on-chain  
+  suiPrice: 2.00  // Real-time from oracle
 }
 ```
 
 ### UX Examples
-- ❌ "Bet 10 USDC on YES"
-- ✅ "Bet $10 on YES"
+- ❌ "Bet 10 SUI on YES"
+- ✅ "Bet $20 on YES" (shows ~10 SUI)
 
-- ❌ "Your balance: 150.5 USDC"
-- ✅ "Your balance: $150.50"
+- ❌ "Your balance: 25.5 SUI"
+- ✅ "Your balance: $51.00" (≈25.5 SUI)
 
 ### Technical Implementation
-- No smart contract changes needed
-- Frontend converts USDC ↔ USD 1:1
-- For SUI amounts, query real-time price oracle
+- Query SUI price from oracle (Pyth/Switchboard)
+- Display USD equivalent in UI
+- Show SUI amount in smaller text/tooltip
 
 ---
 
@@ -376,7 +367,7 @@ emit(WeeklyMetricsRecorded {
 ## 🚧 Implementation Phases
 
 ### Phase 1 (MVP)
-- ✅ In-App Balance (USDC as USD)
+- ✅ In-App Balance (USD display for SUI)
 - ✅ Staking Tiers
 - ✅ Proof of Effort (10hrs/week)
 

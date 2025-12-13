@@ -3,7 +3,7 @@
 ## Core Philosophy
 Instead of relying on ads from day one, we bootstrap through **interactive financial primitives** that create value for streamers, viewers, and the platform simultaneously.
 
-**Token Strategy (MVP & Phase 1-2):** Use **SUI** and **USDC** for all economic activities. A **Points System** tracks user contributions for future token airdrop when we launch the native token at the end of Phase 2.
+**Token Strategy (MVP & Phase 1-2):** Use **SUI** for all economic activities. A **Points System** tracks user contributions for future token airdrop when we launch the native token at the end of Phase 2.
 
 ---
 
@@ -14,7 +14,7 @@ Instead of relying on ads from day one, we bootstrap through **interactive finan
 
 #### Features
 1. **Native Tipping**
-   - One-click payments (**SUI** or **USDC**)
+   - One-click payments (**SUI**)
    - On-stream alerts
    - No third-party services (BuyMeACoffee, etc.)
 
@@ -24,7 +24,7 @@ Instead of relying on ads from day one, we bootstrap through **interactive finan
 
 3. **In-Room Prediction Markets** ⭐ *Revenue Engine*
    - Streamers create predictions: "Will I beat this boss?"
-   - Viewers bet YES/NO with SUI or USDC
+   - Viewers bet YES/NO with SUI
    - Winners take loser pool (minus platform fee)
 
 4. **Points System**

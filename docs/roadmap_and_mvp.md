@@ -139,7 +139,7 @@ struct RoomConnection {
 public fun send_tip(
     sender_profile: &mut UserProfile,
     receiver_profile: &mut UserProfile,
-    payment: Coin<SUI>,  // or Coin<USDC>
+    payment: Coin<SUI>,
     ctx: &TxContext
 ) {
     // Transfer + emit TipEvent
@@ -147,7 +147,7 @@ public fun send_tip(
 ```
 
 #### Frontend
-- **Tip Button** (1-click payment: 1/5/10 SUI or USDC)
+- **Tip Button** (1-click payment: 1/5/10 SUI)
 - **On-Stream Alert** (real-time overlay: "Alice tipped 5 SUI!")
 - **Tip History** (streamer dashboard)
 
@@ -177,13 +177,13 @@ struct Prediction {
 }
 
 public fun create_prediction(...);
-public fun place_bet(...);  // Accepts Coin<SUI> or Coin<USDC>
+public fun place_bet(...);  // Accepts Coin<SUI>
 public fun resolve_prediction(...);  // Optimistic oracle
 ```
 
 #### Frontend
 - **Prediction Creation UI** (streamer creates question + duration)
-- **Betting Interface** (viewers vote YES/NO with SUI or USDC)
+- **Betting Interface** (viewers vote YES/NO with SUI)
 - **Live Pool Display** (shows YES: $500, NO: $300)
 - **Resolution Modal** (streamer claims outcome, 5-min challenge window)
 - **Payout Claims** (winners claim share of loser pool)
