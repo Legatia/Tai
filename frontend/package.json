@@ -12,9 +12,11 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
-    "@mysten/dapp-kit": "0.19.6",
-    "@mysten/enoki": "^0.12.11",
+    "@mysten/dapp-kit": "^0.19.11",
+    "@mysten/enoki": "^0.12.12",
+    "@mysten/slush-wallet": "^0.2.12",
     "@mysten/sui": "1.45.2",
+    "@mysten/wallet-standard": "^0.19.9",
     "@mysten/zklogin": "^0.8.1",
     "@tai/p2p-client": "file:../p2p_privacy_layer",
     "@tanstack/react-query": "^5.90.11",

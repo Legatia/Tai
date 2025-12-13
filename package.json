@@ -10,5 +10,8 @@
     "dev:frontend": "npm run dev -w frontend",
     "dev:backend": "npm run dev -w backend",
     "dev:node": "npm run dev -w node-operator-cli"
+  },
+  "resolutions": {
+    "@mysten/sui": "1.45.2"
   }
 }
