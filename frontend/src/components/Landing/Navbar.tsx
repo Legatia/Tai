@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Video, Radio } from 'lucide-react';
+import { Video, Radio, Users } from 'lucide-react';
 import WalletConnect from '@/components/Wallet/WalletConnect';
 
 export default function Navbar() {
@@ -17,7 +17,7 @@ export default function Navbar() {
                 </Link>
 
                 {/* Navigation */}
-                <div className="flex items-center gap-8">
+                <div className="flex items-center gap-6">
                     <Link
                         href="/meet"
                         className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors text-sm font-medium"
@@ -33,7 +33,20 @@ export default function Navbar() {
                         <span>Live</span>
                     </Link>
 
-                    <div className="h-6 w-px bg-white/10 mx-2" />
+                    <div className="h-6 w-px bg-white/10" />
+
+                    {/* Become Contributor */}
+                    <a
+                        href="https://github.com/Legatia/Tai/tree/main/node-operator-cli"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-sm font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30"
+                    >
+                        <Users className="w-4 h-4" />
+                        <span>Become Contributor</span>
+                    </a>
+
+                    <div className="h-6 w-px bg-white/10" />
 
                     {/* Wallet Connect */}
                     <WalletConnect />
@@ -42,3 +55,4 @@ export default function Navbar() {
         </nav>
     );
 }
+

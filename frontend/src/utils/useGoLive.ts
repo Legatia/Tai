@@ -12,6 +12,7 @@ const TIER_AUDIO = 1;
 interface GoLiveOptions {
     title?: string;
     privacyMode?: boolean;
+    roomType?: 'audio' | 'podcast' | 'video' | 'premium';
 }
 
 interface GoLiveState {
@@ -45,20 +46,23 @@ export function useGoLive() {
             }
 
             // 2. Generate room ID (in future: create on contract)
-            // TODO: Integrate with @mysten/sui wallet for on-chain room creation
             const roomId = generateRoomId();
 
-            // 3. Store room metadata (for now, just console log)
+            // 3. Store room metadata
             console.log('Creating room:', {
                 roomId,
                 title: options.title || 'Live Stream',
                 privacyMode: options.privacyMode || false,
+                roomType: options.roomType || 'video',
                 packageId: PACKAGE_ID,
             });
 
-            // 4. Redirect to broadcast page (streamer view)
-            const privacyParam = options.privacyMode ? '?privacy=true' : '';
-            router.push(`/live/broadcast/${roomId}${privacyParam}`);
+            // 4. Redirect to broadcast page with room type
+            const params = new URLSearchParams();
+            if (options.privacyMode) params.set('privacy', 'true');
+            if (options.roomType) params.set('type', options.roomType);
+            const queryString = params.toString();
+            router.push(`/live/broadcast/${roomId}${queryString ? '?' + queryString : ''}`);
 
             setState({ isLoading: false, error: null });
             return roomId;
