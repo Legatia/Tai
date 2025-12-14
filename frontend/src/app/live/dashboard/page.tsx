@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Radio, Settings, Activity, Users, DollarSign, Eye, Edit3, Camera, Twitter, Globe, Zap, AlertCircle, Loader2, Mic, Video, Monitor, Crown, X, Play } from 'lucide-react';
+import { Radio, Settings, Activity, Users, DollarSign, Eye, Edit3, Camera, Twitter, Globe, Zap, AlertCircle, Loader2, Mic, Video, Monitor, Crown, X, Play, Wallet } from 'lucide-react';
 import { useGoLive } from '@/utils/useGoLive';
+import { useUserProfile, formatStakedSui, TIER_NAMES } from '@/utils/useUserProfile';
+import { useCurrentAccount } from '@mysten/dapp-kit';
 
 // Room type options
 const ROOM_TYPES = [
@@ -13,32 +15,37 @@ const ROOM_TYPES = [
 ];
 
 export default function DashboardPage() {
+    const account = useCurrentAccount();
+    const { profile: onChainProfile, isLoading: isLoadingProfile } = useUserProfile();
     const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [showGoLiveModal, setShowGoLiveModal] = useState(false);
     const [selectedRoomType, setSelectedRoomType] = useState('video');
     const [isDemoMode, setIsDemoMode] = useState(false);
     const { goLive, canStream, isLoading, error } = useGoLive();
 
-    // Mock profile data (in production, fetch from contract/backend)
-    const [profile, setProfile] = useState({
+    // Use on-chain profile if available, otherwise default to Free tier
+    const tierLevel = onChainProfile?.tier ?? 0;
+    const tierName = onChainProfile?.tierName ?? 'Free';
+    const stakedAmount = onChainProfile ? formatStakedSui(onChainProfile.stakedBalance) : '0';
+
+    // Mock display data (name, avatar, etc. - these would come from off-chain storage)
+    const displayProfile = {
         name: 'CryptoStreamer',
         bio: 'Building the future of decentralized streaming 🚀',
         avatar: '/IMG_2262.png',
-        tier: 'Video',
-        tierLevel: 3, // 0=Free, 1=Audio, 2=Podcast, 3=Video, 4=Premium
         followers: 843,
         twitter: '@cryptostreamer',
         website: 'https://tai.gg'
-    });
+    };
 
     const handleGoLive = async () => {
-        const roomType = ROOM_TYPES.find(t => t.id === selectedRoomType);
-        const effectiveTier = isDemoMode ? 4 : profile.tierLevel; // Demo mode = max tier
+        const effectiveTier = isDemoMode ? 4 : tierLevel; // Demo mode = max tier
 
         try {
             await goLive(effectiveTier, {
-                title: `${profile.name}'s Stream`,
-                privacyMode: false
+                title: `${displayProfile.name}'s Stream`,
+                privacyMode: false,
+                roomType: selectedRoomType as 'audio' | 'podcast' | 'video' | 'premium'
             });
             setShowGoLiveModal(false);
         } catch (err) {
@@ -46,7 +53,7 @@ export default function DashboardPage() {
         }
     };
 
-    const isEligible = canStream(profile.tierLevel) || isDemoMode;
+    const isEligible = canStream(tierLevel) || isDemoMode;
     const selectedRoom = ROOM_TYPES.find(t => t.id === selectedRoomType);
 
     return (
@@ -62,8 +69,8 @@ export default function DashboardPage() {
                     <button
                         onClick={() => setIsDemoMode(!isDemoMode)}
                         className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${isDemoMode
-                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                                : 'bg-neutral-800 text-neutral-400 border border-white/5 hover:bg-neutral-700'
+                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                            : 'bg-neutral-800 text-neutral-400 border border-white/5 hover:bg-neutral-700'
                             }`}
                     >
                         <Play className="w-4 h-4" />
@@ -124,7 +131,7 @@ export default function DashboardPage() {
                         <div className="grid grid-cols-2 gap-3 mb-6">
                             {ROOM_TYPES.map((type) => {
                                 const Icon = type.icon;
-                                const isAvailable = isDemoMode || profile.tierLevel >= type.tier;
+                                const isAvailable = isDemoMode || tierLevel >= type.tier;
                                 const isSelected = selectedRoomType === type.id;
 
                                 return (
@@ -133,10 +140,10 @@ export default function DashboardPage() {
                                         onClick={() => isAvailable && setSelectedRoomType(type.id)}
                                         disabled={!isAvailable}
                                         className={`p-4 rounded-xl border transition-all text-left ${isSelected
-                                                ? `bg-${type.color}-500/20 border-${type.color}-500/50`
-                                                : isAvailable
-                                                    ? 'bg-neutral-800/50 border-white/5 hover:border-white/20'
-                                                    : 'bg-neutral-800/30 border-white/5 opacity-50 cursor-not-allowed'
+                                            ? `bg-${type.color}-500/20 border-${type.color}-500/50`
+                                            : isAvailable
+                                                ? 'bg-neutral-800/50 border-white/5 hover:border-white/20'
+                                                : 'bg-neutral-800/30 border-white/5 opacity-50 cursor-not-allowed'
                                             }`}
                                     >
                                         <div className="flex items-center gap-3 mb-2">
@@ -201,8 +208,8 @@ export default function DashboardPage() {
                     <div className="relative group">
                         <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-purple-500/50">
                             <img
-                                src={profile.avatar}
-                                alt={profile.name}
+                                src={displayProfile.avatar}
+                                alt={displayProfile.name}
                                 className="w-full h-full object-cover"
                             />
                         </div>
@@ -219,46 +226,46 @@ export default function DashboardPage() {
                                     {isEditingProfile ? (
                                         <input
                                             type="text"
-                                            value={profile.name}
-                                            onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                                            value={displayProfile.name}
+                                            readOnly
                                             className="bg-neutral-950 border border-white/10 rounded-lg px-3 py-1 text-xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
                                         />
                                     ) : (
-                                        <h2 className="text-xl font-bold text-white">{profile.name}</h2>
+                                        <h2 className="text-xl font-bold text-white">{displayProfile.name}</h2>
                                     )}
-                                    <span className={`px-2 py-0.5 text-xs font-bold rounded-full flex items-center gap-1 ${profile.tierLevel >= 3 ? 'bg-purple-500/20 text-purple-400' :
-                                        profile.tierLevel >= 2 ? 'bg-blue-500/20 text-blue-400' :
+                                    <span className={`px-2 py-0.5 text-xs font-bold rounded-full flex items-center gap-1 ${tierLevel >= 3 ? 'bg-purple-500/20 text-purple-400' :
+                                        tierLevel >= 2 ? 'bg-blue-500/20 text-blue-400' :
                                             'bg-gray-500/20 text-gray-400'
                                         }`}>
                                         <Zap className="w-3 h-3" />
-                                        {profile.tier}
+                                        {tierName} ({stakedAmount} SUI)
                                     </span>
                                 </div>
 
                                 {isEditingProfile ? (
                                     <textarea
-                                        value={profile.bio}
-                                        onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                                        value={displayProfile.bio}
+                                        readOnly
                                         className="w-full bg-neutral-950 border border-white/10 rounded-lg px-3 py-2 text-sm text-neutral-300 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none"
                                         rows={2}
                                     />
                                 ) : (
-                                    <p className="text-neutral-400 text-sm mb-3">{profile.bio}</p>
+                                    <p className="text-neutral-400 text-sm mb-3">{displayProfile.bio}</p>
                                 )}
 
                                 {/* Social Links */}
                                 <div className="flex items-center gap-4 mt-3">
-                                    <a href={`https://twitter.com/${profile.twitter.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-blue-400 transition-colors">
+                                    <a href={`https://twitter.com/${displayProfile.twitter.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-blue-400 transition-colors">
                                         <Twitter className="w-4 h-4" />
-                                        {profile.twitter}
+                                        {displayProfile.twitter}
                                     </a>
-                                    <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-purple-400 transition-colors">
+                                    <a href={displayProfile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-purple-400 transition-colors">
                                         <Globe className="w-4 h-4" />
-                                        {profile.website.replace('https://', '')}
+                                        {displayProfile.website.replace('https://', '')}
                                     </a>
                                     <span className="text-xs text-neutral-500">
                                         <Users className="w-4 h-4 inline mr-1" />
-                                        {profile.followers} followers
+                                        {displayProfile.followers} followers
                                     </span>
                                 </div>
                             </div>
